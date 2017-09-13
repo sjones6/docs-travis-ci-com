@@ -156,6 +156,27 @@ after_success:
 ```
 {: data-file=".travis.yml"}
 
+Note that this will also apply after successful PR builds since $TRAVIS_BRANCH is set to the target branch during a PR build. If you don't want this, you can modify the first line to deploy all pushes to master but exclude PR builds:
+
+```yaml
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" && -z "$TRAVIS_PULL_REQUEST" ]; then
+  #etc
+```
+
+#### Deploy on Tag Pushes
+
+Similar to deploying after a push, you can target tagged pushes only and tag image builds with the tag:
+
+```yaml
+after_success:
+  - if [ -z "$TRAVIS_TAG" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push USER/REPO:$TRAVIS_TAG;
+    fi
+```
+{: data-file=".travis.yml"}
+
 #### Private Registry Login
 
 When pushing to a private registry, be sure to specify the hostname in the
